@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyToken } from './lib/auth'
+import { verifyToken } from './lib/auth-edge'
 
 const PUBLIC_PATHS = ['/', '/login', '/register']
 const API_PUBLIC = ['/api/auth/login', '/api/auth/register']
