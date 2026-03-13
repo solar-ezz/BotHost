@@ -1,11 +1,11 @@
 # BotHost — Discord Bot Hosting Platform
 
-A full-stack Next.js 14 application for hosting and managing Discord bots.
+A full-stack Next.js 15 application for hosting and managing Discord bots.
 
 ## Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Database**: PostgreSQL via Prisma ORM
+- **Framework**: Next.js 15 (App Router)
+- **Database**: PostgreSQL via Prisma ORM v6
 - **Auth**: JWT (jose) + bcryptjs, cookie-based sessions
 - **UI**: Tailwind CSS + Recharts + Lucide Icons
 - **Deploy**: Vercel + Vercel Postgres (or Neon/Supabase)
@@ -21,8 +21,11 @@ npm install
 Create `.env.local`:
 ```env
 DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
 JWT_SECRET="your-random-secret-min-32-chars"
 ```
+
+> For local development, `DATABASE_URL` and `DIRECT_URL` can be the same connection string.
 
 ```bash
 npx prisma migrate dev --name init
@@ -50,7 +53,7 @@ Go to [vercel.com](https://vercel.com) → **New Project** → Import your repo.
 
 In your Vercel project → **Storage** tab → **Create Database** → **Postgres**.
 
-Copy the `DATABASE_URL` it gives you.
+Vercel will auto-populate `DATABASE_URL` and `POSTGRES_URL_NON_POOLING` in your environment.
 
 ### 4. Set Environment Variables
 
@@ -58,22 +61,18 @@ In Vercel project settings → **Environment Variables**:
 
 | Variable | Value |
 |---|---|
-| `DATABASE_URL` | Your Postgres connection string |
+| `DATABASE_URL` | Vercel Postgres pooled URL (auto-added) |
+| `DIRECT_URL` | `POSTGRES_URL_NON_POOLING` value (needed by Prisma for migrations) |
 | `JWT_SECRET` | A random 32+ character string |
 
-Generate a strong secret: `openssl rand -base64 32`
+Generate a strong JWT secret: `openssl rand -base64 32`
 
-### 5. Add Build Command for Prisma
+### 5. Deploy
 
-In Vercel project settings → **Build & Output Settings** → override Build Command:
+The `postinstall` script runs `prisma generate` automatically.
+The `build` script runs `prisma migrate deploy` then `next build`.
 
-```
-prisma generate && prisma migrate deploy && next build
-```
-
-### 6. Deploy
-
-Click **Deploy** — Vercel will build and run your migrations automatically.
+Click **Deploy** — done.
 
 ---
 
@@ -100,19 +99,19 @@ app/
       logout/route.ts
       me/route.ts
     bots/
-      route.ts          ← GET all, POST create
+      route.ts
       [id]/
-        route.ts        ← GET, PATCH, DELETE
-        control/route.ts ← POST start/stop/restart
-        logs/route.ts   ← GET, DELETE
-        metrics/route.ts ← GET, POST (record metric)
+        route.ts
+        control/route.ts
+        logs/route.ts
+        metrics/route.ts
 components/
   Sidebar.tsx
   StatusBadge.tsx
 lib/
-  auth.ts               ← JWT + bcrypt helpers
-  prisma.ts             ← Prisma client singleton
-middleware.ts           ← Route protection
+  auth.ts
+  prisma.ts
+middleware.ts
 prisma/
   schema.prisma
 ```
