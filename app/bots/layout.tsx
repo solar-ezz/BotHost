@@ -15,7 +15,7 @@ export default async function BotsLayout({ children }: { children: React.ReactNo
   if (!user) redirect('/login')
 
   return (
-    <div className="flex h-screen bg-surface-50">
+    <div className="flex h-screen bg-surface-50 dark:bg-surface-950">
       <Sidebar user={user} />
       <main className="flex-1 overflow-y-auto">
         {children}
