@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Loader2, Eye, EyeOff, Info } from 'lucide-react'
 
 export default function NewBotPage() {
-  const router = useRouter()
   const [name, setName] = useState('')
   const [token, setToken] = useState('')
   const [language, setLanguage] = useState('javascript')
