@@ -1,117 +1,60 @@
 # BotHost — Discord Bot Hosting Platform
 
-A full-stack Next.js 15 application for hosting and managing Discord bots.
+## Setup: Discord OAuth Application
 
-## Stack
+Before deploying, you need to create a Discord OAuth app:
 
-- **Framework**: Next.js 15 (App Router)
-- **Database**: PostgreSQL via Prisma ORM v6
-- **Auth**: JWT (jose) + bcryptjs, cookie-based sessions
-- **UI**: Tailwind CSS + Recharts + Lucide Icons
-- **Deploy**: Vercel + Vercel Postgres (or Neon/Supabase)
+1. Go to [discord.com/developers/applications](https://discord.com/developers/applications)
+2. Click **New Application** → give it a name → **Create**
+3. Go to **OAuth2** in the left sidebar
+4. Under **Redirects**, click **Add Redirect** and enter:
+   - For local dev: `http://localhost:3000/api/auth/discord/callback`
+   - For production: `https://your-domain.vercel.app/api/auth/discord/callback`
+5. Copy your **Client ID** and **Client Secret** from the OAuth2 page
+
+---
+
+## Environment Variables (Vercel)
+
+Add these in **Vercel → Settings → Environment Variables**:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | Your Prisma/Neon/Supabase connection string |
+| `DIRECT_URL` | Same as DATABASE_URL (or non-pooled URL) |
+| `JWT_SECRET` | Random 32+ char string (`openssl rand -base64 32`) |
+| `DISCORD_CLIENT_ID` | From Discord Developer Portal → OAuth2 |
+| `DISCORD_CLIENT_SECRET` | From Discord Developer Portal → OAuth2 |
+| `DISCORD_REDIRECT_URI` | `https://your-domain.vercel.app/api/auth/discord/callback` |
+
+---
+
+## Deploy to Vercel
+
+```bash
+git add .
+git commit -m "Discord OAuth auth"
+git push
+```
+
+Vercel will auto-deploy. The `vercel-build` script runs `prisma db push` to sync the schema automatically.
 
 ---
 
 ## Local Development
 
-```bash
-npm install
-```
-
 Create `.env.local`:
 ```env
 DATABASE_URL="postgresql://..."
 DIRECT_URL="postgresql://..."
-JWT_SECRET="your-random-secret-min-32-chars"
+JWT_SECRET="local-dev-secret-32-chars-minimum"
+DISCORD_CLIENT_ID="your-client-id"
+DISCORD_CLIENT_SECRET="your-client-secret"
+DISCORD_REDIRECT_URI="http://localhost:3000/api/auth/discord/callback"
 ```
 
-> For local development, `DATABASE_URL` and `DIRECT_URL` can be the same connection string.
-
 ```bash
-npx prisma migrate dev --name init
+npm install
+npx prisma db push
 npm run dev
-```
-
----
-
-## Deploying to Vercel
-
-### 1. Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-gh repo create bothost --public --push
-```
-
-### 2. Create Vercel Project
-
-Go to [vercel.com](https://vercel.com) → **New Project** → Import your repo.
-
-### 3. Add a Database
-
-In your Vercel project → **Storage** tab → **Create Database** → **Postgres**.
-
-Vercel will auto-populate `DATABASE_URL` and `POSTGRES_URL_NON_POOLING` in your environment.
-
-### 4. Set Environment Variables
-
-In Vercel project settings → **Environment Variables**:
-
-| Variable | Value |
-|---|---|
-| `DATABASE_URL` | Vercel Postgres pooled URL (auto-added) |
-| `DIRECT_URL` | `POSTGRES_URL_NON_POOLING` value (needed by Prisma for migrations) |
-| `JWT_SECRET` | A random 32+ character string |
-
-Generate a strong JWT secret: `openssl rand -base64 32`
-
-### 5. Deploy
-
-The `postinstall` script runs `prisma generate` automatically.
-The `build` script runs `prisma migrate deploy` then `next build`.
-
-Click **Deploy** — done.
-
----
-
-## Project Structure
-
-```
-app/
-  page.tsx              ← Landing page
-  layout.tsx
-  globals.css
-  login/page.tsx        ← Login
-  register/page.tsx     ← Registration
-  dashboard/
-    layout.tsx          ← Auth-gated layout with sidebar
-    page.tsx            ← Bot overview dashboard
-  bots/
-    layout.tsx
-    new/page.tsx        ← Add new bot form
-    [id]/page.tsx       ← Bot detail: logs, metrics, controls
-  api/
-    auth/
-      login/route.ts
-      register/route.ts
-      logout/route.ts
-      me/route.ts
-    bots/
-      route.ts
-      [id]/
-        route.ts
-        control/route.ts
-        logs/route.ts
-        metrics/route.ts
-components/
-  Sidebar.tsx
-  StatusBadge.tsx
-lib/
-  auth.ts
-  prisma.ts
-middleware.ts
-prisma/
-  schema.prisma
 ```

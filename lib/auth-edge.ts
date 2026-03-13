@@ -4,7 +4,7 @@ const SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'fallback-secret-change-in-production'
 )
 
-export async function createToken(payload: { userId: string; email: string }) {
+export async function createToken(payload: { userId: string; discordId: string }) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -15,7 +15,7 @@ export async function createToken(payload: { userId: string; email: string }) {
 export async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, SECRET)
-    return payload as { userId: string; email: string }
+    return payload as { userId: string; discordId: string }
   } catch {
     return null
   }

@@ -3,12 +3,12 @@ import type { NextRequest } from 'next/server'
 import { verifyToken } from './lib/auth-edge'
 
 const PUBLIC_PATHS = ['/', '/login', '/register']
-const API_PUBLIC = ['/api/auth/login', '/api/auth/register']
+const API_PUBLIC = ['/api/auth/discord', '/api/auth/discord/callback']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (PUBLIC_PATHS.includes(pathname) || API_PUBLIC.includes(pathname)) {
+  if (PUBLIC_PATHS.includes(pathname) || API_PUBLIC.some(p => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 

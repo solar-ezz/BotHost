@@ -1,18 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Bot, LayoutDashboard, Plus, LogOut, Sun, Moon } from 'lucide-react'
 import clsx from 'clsx'
 import { useTheme } from './ThemeProvider'
+import Image from 'next/image'
 
 interface SidebarProps {
-  user: { name: string; email: string }
+  user: { name: string; email: string | null; avatar: string | null }
 }
 
 export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
-  const router = useRouter()
   const { theme, toggle } = useTheme()
 
   async function handleLogout() {
@@ -63,14 +63,24 @@ export default function Sidebar({ user }: SidebarProps) {
           {theme === 'dark' ? 'Light mode' : 'Dark mode'}
         </button>
         <div className="flex items-center gap-3 px-3 py-2 mb-1">
-          <div className="w-7 h-7 bg-brand-100 dark:bg-brand-900 rounded-full flex items-center justify-center">
-            <span className="text-xs font-semibold text-brand-700 dark:text-brand-400">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
+          {user.avatar ? (
+            <Image
+              src={user.avatar}
+              alt={user.name}
+              width={28}
+              height={28}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="w-7 h-7 bg-brand-100 dark:bg-brand-900 rounded-full flex items-center justify-center">
+              <span className="text-xs font-semibold text-brand-700 dark:text-brand-400">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-surface-900 dark:text-white truncate">{user.name}</p>
-            <p className="text-xs text-surface-400 dark:text-surface-500 truncate">{user.email}</p>
+            {user.email && <p className="text-xs text-surface-400 dark:text-surface-500 truncate">{user.email}</p>}
           </div>
         </div>
         <button

@@ -9,7 +9,7 @@ export default async function BotsLayout({ children }: { children: React.ReactNo
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { name: true, email: true },
+    select: { name: true, email: true, avatar: true },
   })
 
   if (!user) redirect('/login')
