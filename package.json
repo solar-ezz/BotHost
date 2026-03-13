@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "PRISMA_HIDE_UPDATE_MESSAGE=1 PRISMA_DISABLE_HINTS=1 prisma generate && prisma migrate deploy && next build",
+    "build": "PRISMA_HIDE_UPDATE_MESSAGE=1 PRISMA_DISABLE_HINTS=1 prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "PRISMA_HIDE_UPDATE_MESSAGE=1 PRISMA_DISABLE_HINTS=1 prisma generate"
+    "postinstall": "PRISMA_HIDE_UPDATE_MESSAGE=1 PRISMA_DISABLE_HINTS=1 prisma generate",
+    "vercel-build": "PRISMA_HIDE_UPDATE_MESSAGE=1 PRISMA_DISABLE_HINTS=1 prisma generate && prisma db push --accept-data-loss && next build"
   },
   "dependencies": {
     "next": "15.3.8",
