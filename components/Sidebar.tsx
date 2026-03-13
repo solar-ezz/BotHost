@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Bot, LayoutDashboard, Plus, LogOut, Settings } from 'lucide-react'
+import { Bot, LayoutDashboard, Plus, LogOut } from 'lucide-react'
 import clsx from 'clsx'
 
 interface SidebarProps {
