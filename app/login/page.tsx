@@ -6,6 +6,7 @@ import { Bot } from 'lucide-react'
 import { Suspense } from 'react'
 
 const ERROR_MESSAGES: Record<string, string> = {
+  cancelled: 'Login cancelled.',
   invalid_state: 'Authentication failed. Please try again.',
   token_failed: 'Could not connect to Discord. Please try again.',
   user_failed: 'Could not fetch your Discord profile. Please try again.',

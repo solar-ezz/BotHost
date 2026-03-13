@@ -5,17 +5,10 @@ import { createToken } from '@/lib/auth-edge'
 export async function GET(req: Request) {
   const url = new URL(req.url)
   const code = url.searchParams.get('code')
-  const state = url.searchParams.get('state')
+  const error = url.searchParams.get('error')
 
-  const cookieHeader = req.headers.get('cookie') || ''
-  const storedState = cookieHeader
-    .split(';')
-    .map(c => c.trim())
-    .find(c => c.startsWith('oauth-state='))
-    ?.split('=')[1]
-
-  if (!code || !state || state !== storedState) {
-    return NextResponse.redirect(new URL('/login?error=invalid_state', req.url))
+  if (error || !code) {
+    return NextResponse.redirect(new URL('/login?error=cancelled', req.url))
   }
 
   try {
@@ -32,6 +25,8 @@ export async function GET(req: Request) {
     })
 
     if (!tokenRes.ok) {
+      const errText = await tokenRes.text()
+      console.error('Discord token error:', errText)
       return NextResponse.redirect(new URL('/login?error=token_failed', req.url))
     }
 
@@ -77,7 +72,6 @@ export async function GET(req: Request) {
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
     })
-    response.cookies.delete('oauth-state')
 
     return response
   } catch (err) {
